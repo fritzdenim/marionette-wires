@@ -2,6 +2,8 @@ var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var browserify = require('browserify');
 var del = require('del');
+var mocha = require('gulp-mocha');
+var gutil = require('gulp-util');
 var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var stylish = require('jshint-stylish');
@@ -83,14 +85,14 @@ gulp.task('jshint', function() {
 
 var reporter = 'spec';
 
-gulp.task('mocha', ['jshint'], function() {
-  return gulp.src([
-    './test/setup/node.js',
-    './test/setup/helpers.js',
-    './test/unit/**/*.js'
-  ], { read: false })
-    .pipe($.plumber())
-    .pipe($.mocha({ reporter: reporter }));
+gulp.task('mocha', function() {
+    return gulp.src(['test/*.js'], { read: false })
+        .pipe(mocha({ reporter: 'list' }))
+        .on('error', gutil.log);
+});
+
+gulp.task('watch-mocha', function() {
+    gulp.watch(['lib/**', 'test/**'], ['mocha']);
 });
 
 gulp.task('build', [
